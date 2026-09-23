@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- HUD de la freecam -->
+  <div id="hud" class="hidden">
+    <span>Vel <b id="hud-speed">0</b></span>
+    <span>FOV <b id="hud-fov">0</b></span>
+    <span>Roll <b id="hud-roll">0</b></span>
+    <small>F5 panel · K keyframe · F7 play</small>
+  </div>
+
+  <div id="countdown" class="hidden"></div>
+
+  <main id="panel" class="hidden">
+    <header>
+      <h1>STUDIO</h1>
+      <button class="icon" data-action="close" title="Cerrar (Esc)">✕</button>
+    </header>
+
+    <nav>
+      <button class="tab active" data-tab="camera">Cámara</button>
+      <button class="tab" data-tab="cine">Cinemática</button>
+      <button class="tab" data-tab="photo">Foto</button>
+      <button class="tab" data-tab="world">Mundo</button>
+      <button class="tab" data-tab="actors">Actores</button>
+    </nav>
+
+    <!-- CÁMARA -->
+    <section id="tab-camera" class="page active">
+      <button id="fc-toggle" class="primary wide">Activar freecam</button>
+
+      <label class="row">FOV <output id="fc-fov-out"></output>
+        <input type="range" id="fc-fov" min="5" max="120" step="0.5">
+      </label>
+      <label class="row">Velocidad (m/s) <output id="fc-speed-out"></output>
+        <input type="range" id="fc-speed" min="0.1" max="150" step="0.1">
+      </label>
+      <label class="row">Roll <output id="fc-roll-out"></output>
+        <input type="range" id="fc-roll" min="-180" max="180" step="0.5">
+      </label>
+
+      <h3>Profundidad de campo</h3>
+      <label class="check"><input type="checkbox" id="dof-enabled"> Activar DOF</label>
+      <label class="row">Cerca <output id="dof-near-out"></output>
+        <input type="range" id="dof-near" min="0" max="100" step="0.1">
+      </label>
+      <label class="row">Lejos <output id="dof-far-out"></output>
+        <input type="range" id="dof-far" min="0" max="500" step="0.5">
+      </label>
+      <label class="row">Intensidad <output id="dof-strength-out"></output>
+        <input type="range" id="dof-strength" min="0" max="1" step="0.01">
+      </label>
+
+      <button class="wide" data-action="freecam:bringPlayer">Traer mi personaje a la cámara</button>
+
+      <h3>Controles</h3>
+      <ul class="keys">
+        <li><kbd>W A S D</kbd> mover · <kbd>Espacio/E</kbd> subir · <kbd>Ctrl/Q</kbd> bajar</li>
+        <li><kbd>Shift</kbd> rápido · <kbd>Alt</kbd> lento · <kbd>RePág/AvPág</kbd> velocidad</li>
+        <li><kbd>Rueda</kbd> FOV · <kbd>Z/C</kbd> roll · <kbd>X</kbd> reset roll</li>
+        <li><kbd>F6</kbd> freecam · <kbd>K</kbd> keyframe · <kbd>F7</kbd> play · <kbd>Retroceso</kbd> cortar</li>
+      </ul>
+    </section>
+
+    <!-- CINEMÁTICA -->
+    <section id="tab-cine" class="page">
+      <div class="inline">
+        <label>Duración (s) <input type="number" id="kf-duration" min="0.1" max="600" step="0.1"></label>
+        <button class="primary" id="kf-add">+ Keyframe</button>
+      </div>
+
+      <ol id="kf-list" class="list"></ol>
+
+      <h3>Reproducción</h3>
+      <div class="grid2">
+        <label>Suavizado
+          <select id="cine-ease">
+            <option value="smooth">Suave (entrada/salida)</option>
+            <option value="linear">Lineal</option>
+          </select>
+        </label>
+        <label>Cuenta atrás (s) <input type="number" id="cine-countdown" min="0" max="10" step="1"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="cine-letterbox"> Bandas de cine</label>
+      <label class="check"><input type="checkbox" id="cine-loop"> Repetir en bucle</label>
+      <label class="check"><input type="checkbox" id="cine-record"> Grabar clip (Rockstar Editor)</label>
+
+      <div class="inline">
+        <button class="primary" id="cine-play">▶ Reproducir</button>
+        <button id="cine-stop">■ Parar</button>
+        <button class="danger" data-action="cine:clear">Borrar todo</button>
+      </div>
+
+      <h3>Escenas guardadas</h3>
+      <div class="inline">
+        <input type="text" id="scene-name" maxlength="40" placeholder="Nombre (sin tildes)">
+        <button class="primary" id="scene-save">Guardar</button>
+      </div>
+      <ul id="scene-list" class="list"></ul>
+    </section>
+
+    <!-- FOTO -->
+    <section id="tab-photo" class="page">
+      <label class="check"><input type="checkbox" id="v-hideHud"> Ocultar HUD</label>
+      <label class="check"><input type="checkbox" id="v-letterbox"> Bandas de cine (2.39:1)</label>
+      <label class="check"><input type="checkbox" id="v-grid"> Cuadrícula (regla de tercios)</label>
+      <label class="check"><input type="checkbox" id="v-hidePlayer"> Ocultar mi personaje</label>
+
+      <label>Filtro <select id="v-filter"></select></label>
+      <label class="row">Intensidad del filtro <output id="v-filterStrength-out"></output>
+        <input type="range" id="v-filterStrength" min="0" max="1" step="0.01">
+      </label>
+      <label class="row">Cámara lenta <output id="v-timeScale-out"></output>
+        <input type="range" id="v-timeScale" min="0.05" max="1" step="0.05">
+      </label>
+      <p class="hint">Para la captura: oculta el HUD, cierra el panel y usa F12 (Steam) o tu grabador.</p>
+    </section>
+
+    <!-- MUNDO -->
+    <section id="tab-world" class="page">
+      <label>Clima <select id="w-weather"></select></label>
+      <div class="grid2">
+        <label>Hora <input type="number" id="w-hour" min="0" max="23"></label>
+        <label>Minuto <input type="number" id="w-minute" min="0" max="59"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="w-freezeTime"> Congelar hora</label>
+      <label class="check"><input type="checkbox" id="w-blackout"> Apagón (sin luces)</label>
+      <label class="row">Tráfico y peatones <output id="w-density-out"></output>
+        <input type="range" id="w-density" min="0" max="1" step="0.05">
+      </label>
+      <label class="row">Viento <output id="w-wind-out"></output>
+        <input type="range" id="w-wind" min="0" max="12" step="0.5">
+      </label>
+      <button class="wide" data-action="world:clearArea">Limpiar zona (100 m)</button>
+      <p class="hint">El mundo se sincroniza con todos los jugadores del servidor.</p>
+    </section>
+
+    <!-- ACTORES -->
+    <section id="tab-actors" class="page">
+      <div class="grid2">
+        <label>Tipo
+          <select id="a-kind">
+            <option value="ped">Personaje</option>
+            <option value="vehicle">Vehículo</option>
+            <option value="prop">Prop</option>
+          </select>
+        </label>
+        <label>Modelo <input type="text" id="a-model" list="a-models" placeholder="adder"></label>
+        <datalist id="a-models"></datalist>
+      </div>
+      <div class="inline">
+        <button class="primary" id="a-spawn">Colocar donde apunto</button>
+        <button data-action="actor:clone">Clonarme</button>
+      </div>
+
+      <h3>Animación</h3>
+      <div class="grid2">
+        <label>Aplicar a <select id="a-target"></select></label>
+        <label>Animación <select id="a-anim"></select></label>
+      </div>
+      <div class="inline">
+        <button class="primary" id="a-play">▶ Animar</button>
+        <button id="a-stop">■ Parar</button>
+      </div>
+
+      <h3>En escena</h3>
+      <ul id="actor-list" class="list"></ul>
+      <button class="danger wide" data-action="actor:clear">Borrar todos</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

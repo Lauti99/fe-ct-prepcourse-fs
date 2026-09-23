@@ -1,0 +1,47 @@
+# ==========================================
+#  STUDIO - servidor de FiveM para contenido
+#  Copia este archivo como server.cfg
+# ==========================================
+
+endpoint_add_tcp "0.0.0.0:30120"
+endpoint_add_udp "0.0.0.0:30120"
+
+# --- Recursos base de cfx-server-data (necesarios para aparecer) ---
+ensure mapmanager
+ensure chat
+ensure spawnmanager
+ensure sessionmanager
+ensure basic-gamemode
+ensure hardcap
+
+# --- Nuestro estudio ---
+ensure studio
+
+# --- Info del servidor ---
+sv_hostname "Studio | Cinemáticas y fotos"
+sets sv_projectName "Studio"
+sets sv_projectDesc "Servidor privado para grabar cinemáticas y sacar fotos"
+sets tags "studio, cinematic, content"
+sets locale "es-ES"
+sv_maxclients 8
+
+set onesync on
+sv_scriptHookAllowed 0
+
+# Build del juego (desbloquea coches/mapas de DLC más nuevos). Opcional.
+# sv_enforceGameBuild 3095
+
+# Clave del servidor: https://portal.cfx.re (Server Registration Keys)
+sv_licenseKey "CAMBIA_ESTO"
+set steam_webApiKey "none"
+
+# --- Permisos ---
+add_ace group.admin command allow
+add_ace group.admin studio.use allow
+
+# Tu identificador (lo ves en txAdmin > Players, o en la consola al conectar)
+# add_principal identifier.license:TU_LICENSE_AQUI group.admin
+
+# Mientras el servidor sea privado, todos pueden usar el estudio.
+# Si lo abres al público, BORRA esta línea y usa la de arriba.
+add_ace builtin.everyone studio.use allow
